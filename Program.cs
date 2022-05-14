@@ -6,6 +6,7 @@ Console.CancelKeyPress += delegate {
     new LoadingUnloading().Save();
     Environment.Exit(0); // User canceled program
 };
+Console.WriteLine($"{DateTime.Now} | Program started...");
 ConsoleHelp con = new ConsoleHelp();
 Github git = new Github();
 Balena bel = new Balena();
@@ -18,18 +19,21 @@ if (!new LoadingUnloading().Loaded()) { // No settings - prompt for initial conf
 
 while (true) {
     // Version checking with github logic - may be organized into it's own class down the road
+    bool updated = false;
     if (git.NeedsCloned())
     {
-        if (git.NeedsPulled())
-        {
-            git.PullRepo(); // Update
-            if (BalenaStatus.NeedsAuth) bel.BalenaLogin(); // Prompt for login if initial run
-            bel.FleetPush(); // Push update to balena for building
-            if (!String.IsNullOrEmpty(SettingsStatic.Settings.webhook)) Discord.SendWebhook();
-            Console.WriteLine($"{DateTime.Now} | Fleet updated!");
-        }
-        Console.WriteLine($"{DateTime.Now} | Update not needed");
+        git.CloneRepo();                
     }
+    if (git.NeedsPulled())
+    {
+        git.PullRepo(); // Update
+        if (BalenaStatus.NeedsAuth) bel.BalenaLogin(); // Prompt for login if initial run
+        bel.FleetPush(); // Push update to balena for building
+        if (!String.IsNullOrEmpty(SettingsStatic.Settings.webhook)) Discord.SendWebhook();
+        Console.WriteLine($"{DateTime.Now} | Fleet updated!");
+        updated = true;
+    }
+    if (!updated) { Console.WriteLine($"{DateTime.Now} | Update not needed"); }
     Thread.Sleep(60000);
 }
 

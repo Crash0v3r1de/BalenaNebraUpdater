@@ -40,25 +40,34 @@ namespace BalenaNebraUpdater.Tools
         }
         private string CurrentCommitHash() {
             string current = "";
-            using (var repo = new Repository(_gitLoc))
-            {
-                foreach (Branch b in repo.Branches.Where(b => !b.IsRemote))
+            try {
+                using (var repo = new Repository(_gitLoc))
                 {
-                    if (b.FriendlyName.Contains("master")) {
-                        var logs = b.TrackedBranch.Commits;
-                        foreach (var item in logs)
+                    foreach (Branch b in repo.Branches.Where(b => !b.IsRemote))
+                    {
+                        if (b.FriendlyName.Contains("master"))
                         {
-                            var tmp = item.Id;
-                            current = tmp.Sha;
+                            var logs = b.TrackedBranch.Commits;
+                            foreach (var item in logs)
+                            {
+                                var tmp = item.Id;
+                                current = tmp.Sha;
                                 break; // we just want the newest (first listed)
+                            }
                         }
                     }
                 }
+            } catch { // repo needs cloned
             }
+            
             return current;
         }
         public bool NeedsPulled() {
-            if (CurrentCommitHash() != SettingsStatic.Settings.CurrentCommit) return true;
+            var curHash = CurrentCommitHash();
+            if (curHash != SettingsStatic.Settings.CurrentCommit) {
+                SettingsStatic.Settings.CurrentCommit = curHash;
+                return true;
+            }
             return false;
         }
     }
