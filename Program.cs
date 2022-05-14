@@ -7,14 +7,16 @@ Console.CancelKeyPress += delegate {
     Environment.Exit(0); // User canceled program
 };
 Console.WriteLine($"{DateTime.Now} | Program started...");
+LoadingUnloading ld = new LoadingUnloading();
 ConsoleHelp con = new ConsoleHelp();
 Github git = new Github();
 Balena bel = new Balena();
 
-if (!new LoadingUnloading().Loaded()) { // No settings - prompt for initial config
+if (ld.Loaded()) { // No settings - prompt for initial config
     SettingsStatic.Settings.webhook = con.PromptWebhook();
     SettingsStatic.Settings.BalenaPath = con.BalenaPath();
     SettingsStatic.Settings.FleetName = con.FleetName();
+    ld.Save();
 }
 
 BalenaStatus.NeedsAuth = true;
@@ -39,6 +41,3 @@ while (true) {
     if (!updated) { Console.WriteLine($"{DateTime.Now} | Update not needed"); }
     Thread.Sleep(60000);
 }
-
-
-Console.WriteLine($"Current Commit: {SettingsStatic.Settings.CurrentCommit} | Repo Current Commit: ");
