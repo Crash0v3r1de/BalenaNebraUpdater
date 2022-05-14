@@ -17,17 +17,20 @@ if (!new LoadingUnloading().Loaded()) { // No settings - prompt for initial conf
     SettingsStatic.Settings.FleetName = con.FleetName();
 }
 
+BalenaStatus.NeedsAuth = true;
+if (bel.NeedsAuth()) bel.BalenaLogin(); BalenaStatus.NeedsAuth = false;
+
 while (true) {
     // Version checking with github logic - may be organized into it's own class down the road
     bool updated = false;
     if (git.NeedsCloned())
     {
-        git.CloneRepo();                
+        git.CloneRepo();
     }
     if (git.NeedsPulled())
     {
         git.PullRepo(); // Update
-        if (BalenaStatus.NeedsAuth) bel.BalenaLogin(); // Prompt for login if initial run
+        if (BalenaStatus.NeedsAuth) bel.BalenaLogin(); BalenaStatus.NeedsAuth = false; // Prompt for login if initial run
         bel.FleetPush(); // Push update to balena for building
         if (!String.IsNullOrEmpty(SettingsStatic.Settings.webhook)) Discord.SendWebhook();
         Console.WriteLine($"{DateTime.Now} | Fleet updated!");

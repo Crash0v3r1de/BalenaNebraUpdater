@@ -12,6 +12,31 @@ namespace BalenaNebraUpdater.Core
     {
         private readonly string _gitLoc = Environment.CurrentDirectory + "\\helium-rak";
 
+        public bool NeedsAuth() {
+            ProcessStartInfo gitInfo = new ProcessStartInfo();
+            gitInfo.CreateNoWindow = true;
+            gitInfo.RedirectStandardError = true;
+            gitInfo.RedirectStandardOutput = true;
+            gitInfo.FileName = SettingsStatic.Settings.BalenaPath + @"\balena.cmd";
+            Process gitProcess = new Process();
+
+
+            gitInfo.Arguments = "fleets";
+            gitInfo.WorkingDirectory = _gitLoc;
+
+            gitProcess.StartInfo = gitInfo;
+            gitProcess.Start();
+
+            string stderr_str = gitProcess.StandardError.ReadToEnd();
+            string stdout_str = gitProcess.StandardOutput.ReadToEnd();
+
+            gitProcess.WaitForExit();
+            gitProcess.Close();
+
+            if (stderr_str.Contains("Login required")) return true;
+
+            return false;
+        }
         public bool BalenaLogin() {
             ProcessStartInfo gitInfo = new ProcessStartInfo();
             gitInfo.CreateNoWindow = true;
