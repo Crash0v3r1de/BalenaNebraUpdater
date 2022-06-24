@@ -15,7 +15,7 @@ namespace BalenaNebraUpdater.Tools
             if (!String.IsNullOrEmpty(SettingsStatic.Settings.webhook)) {
                 WebhookBasicJSON tmp = new WebhookBasicJSON();
                 tmp.avatar_url = "https://991tech.org/cdn-img/winbox.png";
-                tmp.content = $"Balena fleet has been updated to recent commit | Hash: {SettingsStatic.Settings.CurrentCommit}";
+                tmp.content = $"New balena image update (fleet updated) | Hash: {SettingsStatic.Settings.CurrentCommit}";
                 tmp.username = "Balena Helium-Rak Auto Updater";
 
                 var web = new HttpClient();

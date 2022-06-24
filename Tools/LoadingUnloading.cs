@@ -15,7 +15,12 @@ namespace BalenaNebraUpdater.Tools
         public void Save() { 
         if(File.Exists(config)) File.Delete(config);
             using (var sw = new StreamWriter(config)) {
-                sw.WriteLine(JsonConvert.SerializeObject(SettingsStatic.Settings));
+                Settings tmpParse = new Settings();
+                tmpParse = SettingsStatic.Settings;
+                string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(tmpParse.ApiKey));
+                tmpParse.ApiKey = encoded;
+                encoded = null;
+                sw.WriteLine(JsonConvert.SerializeObject(tmpParse));
             }
         }
         public bool Loaded()
@@ -25,9 +30,10 @@ namespace BalenaNebraUpdater.Tools
                 try {
                     var raw = File.ReadAllText(config);
                     var set = JsonConvert.DeserializeObject<Settings>(raw);
+                    set.ApiKey = Encoding.UTF8.GetString(Convert.FromBase64String(set.ApiKey));
                     SettingsStatic.Settings = set;
                     return true;
-                } catch { return false; }                
+                } catch { return false; }
             }
             return false;
         }

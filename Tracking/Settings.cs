@@ -12,6 +12,8 @@ namespace BalenaNebraUpdater.Tracking
         public string? CurrentCommit { get; set; }
         public string? FleetName { get; set; }
         public string? BalenaPath { get; set; }
+        public string? OrgName { get; set; }
+        public string? ApiKey { get; set; }
 
     }
     public class Setting {

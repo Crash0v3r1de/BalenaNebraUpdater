@@ -28,5 +28,19 @@ namespace BalenaNebraUpdater.Tools
             Console.WriteLine("");
             return raw;
         }
+        public string BalenaFleetName()
+        {
+            Console.Write("Enter Fleet Name: ");
+            string raw = Console.ReadLine();
+            Console.WriteLine("");
+            return raw;
+        }
+        public string BalenaApiKey()
+        {
+            Console.Write("Enter Api Key: ");
+            string raw = Console.ReadLine();
+            Console.WriteLine("");
+            return raw;
+        }
     }
 }
