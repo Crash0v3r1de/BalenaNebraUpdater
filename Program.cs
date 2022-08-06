@@ -8,8 +8,7 @@ Console.CancelKeyPress += delegate {
 Console.WriteLine($"{DateTime.Now} | Program started...");
 LoadingUnloading ld = new LoadingUnloading();
 ConsoleHelp con = new ConsoleHelp();
-Github git = new Github();
-Balena bel = new Balena();
+Balena belInitial = new Balena();
 
 if (args.Length != 0) { 
 if(args[0] == "true") StaticDebugger.CurrentlyDebugging = true;
@@ -21,7 +20,7 @@ if(args[0] == "true") StaticDebugger.CurrentlyDebugging = true;
 
 if (!ld.Loaded()) { // No settings - prompt for initial config
     SettingsStatic.Settings.ApiKey = con.BalenaApiKey();
-    SettingsStatic.Settings.OrgName = bel.GetOrgName(SettingsStatic.Settings.ApiKey);
+    SettingsStatic.Settings.OrgName = belInitial.GetOrgName(SettingsStatic.Settings.ApiKey);
     SettingsStatic.Settings.webhook = con.PromptWebhook();
     // Bellow is commented out since balenacli option is not coded as an option yet
     //SettingsStatic.Settings.BalenaPath = con.BalenaPath();
@@ -29,10 +28,15 @@ if (!ld.Loaded()) { // No settings - prompt for initial config
     ld.Save();
 }
 
+// Leftover debug code
 //BalenaStatus.NeedsAuth = true;
 //if (bel.NeedsAuth()) bel.BalenaLogin(); BalenaStatus.NeedsAuth = false;
 
 while (true) {
+    Github git = new Github();
+    Balena bel = new Balena();
+
+
     try {
         bool updated = false;
         string output;
@@ -65,7 +69,7 @@ while (true) {
             else Console.WriteLine($"{DateTime.Now} | Update not needed");
 
         }
-    } catch { Console.WriteLine("FATAL ERROR! Please report an issue to github | Failed logic loop"); }    
+    } catch(Exception ex) { Console.WriteLine("FATAL ERROR! Please report an issue to github | Failed logic loop"); Logger.SaveEntry($"Logic loop failed | {ex.Message}",BalenaNebraUpdater.Objs.Enums.ErrorLevel.Fatal); }    
 
     // Add console menu options to use the balenacli option, this code would then be used. Api is just better for easability
     //if (git.NeedsCloned())

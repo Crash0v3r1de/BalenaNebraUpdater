@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using BalenaNebraUpdater.Objs;
+using BalenaNebraUpdater.Tools;
 
 namespace BalenaNebraUpdater.Core
 {
@@ -109,7 +110,7 @@ namespace BalenaNebraUpdater.Core
                 web.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", SettingsStatic.Settings.ApiKey);
                 var result = web.PostAsync($"https://builder.balena-cloud.com/v3/buildFromUrl?headless=true&owner={SettingsStatic.Settings.OrgName}&app={SettingsStatic.Settings.FleetName}", content).Result;
                 return result.Content.ReadAsStringAsync().Result;
-            } catch { }
+            } catch(Exception ex) { Logger.SaveEntry($"APIPUSHREPOUPDATE() | {ex.Message}",Objs.Enums.ErrorLevel.Fatal); }
 
 
             return null;
@@ -135,9 +136,9 @@ namespace BalenaNebraUpdater.Core
                 var result = web.GetAsync("https://api.balena-cloud.com/v6/organization").Result;
                 var tmp = result.Content.ReadAsStringAsync().Result; 
 
-                return Regex.Match(tmp, "handle\":\"(.*?)\"").Groups[1].Value; // fuck making an object for this
+                return Regex.Match(tmp, "handle\":\"(.*?)\"").Groups[1].Value; // Regex > Deserialize
             }
-            catch { }
+            catch (Exception ex) { Logger.SaveEntry($"GETORGNAME() | {ex.Message}", Objs.Enums.ErrorLevel.Fatal); }
 
 
             return null;
@@ -165,7 +166,7 @@ namespace BalenaNebraUpdater.Core
 
                 return commits[0].sha;
             }
-            catch { }
+            catch (Exception ex) { Logger.SaveEntry($"GETCURRENTCOMMIT() | {ex.Message}", Objs.Enums.ErrorLevel.Fatal); }
 
 
             return null;
@@ -205,7 +206,7 @@ namespace BalenaNebraUpdater.Core
 
                 return ours;
             }
-            catch { }
+            catch (Exception ex) { Logger.SaveEntry($"GETFLEETS() | {ex.Message}", Objs.Enums.ErrorLevel.Fatal); }
 
 
             return null;

@@ -12,16 +12,20 @@ namespace BalenaNebraUpdater.Tools
     {
         private readonly string config = Directory.GetCurrentDirectory()+"\\conf.json";
 
-        public void Save() { 
-        if(File.Exists(config)) File.Delete(config);
-            using (var sw = new StreamWriter(config)) {
-                Settings tmpParse = new Settings();
-                tmpParse = SettingsStatic.Settings;
-                string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(tmpParse.ApiKey));
-                tmpParse.ApiKey = encoded;
-                encoded = null;
-                sw.WriteLine(JsonConvert.SerializeObject(tmpParse));
-            }
+        public void Save()
+        {
+            try {
+                if (File.Exists(config)) File.Delete(config);
+                using (var sw = new StreamWriter(config))
+                {
+                    Settings tmpParse = new Settings();
+                    tmpParse = SettingsStatic.Settings;
+                    string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(tmpParse.ApiKey));
+                    tmpParse.ApiKey = encoded;
+                    encoded = null;
+                    sw.WriteLine(JsonConvert.SerializeObject(tmpParse));
+                }
+            } catch(Exception ex) { Logger.SaveEntry($"Failed Saving Config | {ex.Message}",Objs.Enums.ErrorLevel.Fatal); }        
         }
         public bool Loaded()
         {
@@ -33,7 +37,7 @@ namespace BalenaNebraUpdater.Tools
                     set.ApiKey = Encoding.UTF8.GetString(Convert.FromBase64String(set.ApiKey));
                     SettingsStatic.Settings = set;
                     return true;
-                } catch { return false; }
+                } catch(Exception ex) { Logger.SaveEntry($"Failed Saving Config | {ex.Message}", Objs.Enums.ErrorLevel.Fatal);  return false; }
             }
             return false;
         }
